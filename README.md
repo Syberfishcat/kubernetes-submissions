@@ -1,5 +1,7 @@
-# DevOps with Kubernetes
+# KubernetesSubmissions
 
-## Chapter 2
+## Exercises
 
-- [1.1 — Getting started](https://github.com/Syberfishcat//tree/1.1/log-output)
+### Chapter 2
+
+- [1.1.](https://github.com/Syberfishcat/kubernetes-submissions/tree/1.1/log-output)
