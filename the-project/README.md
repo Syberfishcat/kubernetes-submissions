@@ -1,13 +1,15 @@
 ## Todo app
 
-A web server that reads the PORT environment variable and
-prints "Server started in port NNNN" on startup.
-The default port is 8080.
+Returns a simple HTML page at `/`. Uses `PORT` (default: `8080`).
 
-Run locally: `PORT=3000 python3 main.py`
+Run commands from `the-project`.
 
-Deploy from the the-project directory:
-`kubectl apply -f manifests/deployment.yaml`
+Deploy and access:
 
-View logs:
-`kubectl logs -f deployment/todo-app`
+```sh
+kubectl apply -f manifests/deployment.yaml
+kubectl rollout status deployment/todo-app
+kubectl port-forward deployment/todo-app 8080:3000
+```
+
+Keep port-forward running and open <http://localhost:8080/> in a browser.
