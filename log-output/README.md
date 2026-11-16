@@ -1,17 +1,15 @@
 ## Log output app
 
-Prints a timestamp and the same randomly generated UUID every 5 seconds.
-It also serves the current timestamp and UUID over HTTP at `/` (port 8080 by default, override with the `PORT` env var).
+One Pod, two containers sharing an `emptyDir` volume at `/app/logs`:
 
-Run locally: `python3 main.py`, then `curl http://localhost:8080/`
+- `log-generator`: writes a timestamp and a random UUID to `log.txt` every 5 seconds.
+- `log-reader`: serves the content of `log.txt` over HTTP GET `/` (port 8080).
 
 Deploy from the log-output directory:
 `kubectl apply -f manifests/`
 
-This applies the Deployment, the Service (`log-output-svc`, port 2345 -> container port 8080) and the Ingress (`/` -> `log-output-svc`).
-
 View logs:
-`kubectl logs -f deployment/log-output`
+`kubectl logs -f deployment/log-output -c log-generator`
 
-Access through the Ingress (with the k3d cluster mapping port 8081 to the load balancer's port 80):
+Access through the Ingress (k3d port 8081 -> 80):
 `curl http://localhost:8081/`

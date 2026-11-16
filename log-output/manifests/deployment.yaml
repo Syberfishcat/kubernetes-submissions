@@ -12,6 +12,17 @@ spec:
       labels:
         app: log-output
     spec:
+      volumes: # Define volume
+        - name: shared-logs
+          emptyDir: {}
       containers:
-        - name: log-output
-          image: sybercat/log-output:1.7
+        - name: log-generator
+          image: sybercat/log-generator:1.10
+          volumeMounts: # Mount volume
+          - name: shared-logs
+            mountPath: /app/logs
+        - name: log-reader
+          image: sybercat/log-reader:1.10
+          volumeMounts: # Mount volume
+          - name: shared-logs
+            mountPath: /app/logs
