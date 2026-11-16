@@ -1,15 +1,15 @@
 ## Log output app
 
-One Pod, two containers sharing an `emptyDir` volume at `/app/logs`:
+One Pod, two containers sharing the `logs-claim` PersistentVolumeClaim at `/app/logs` (also shared with ping-pong):
 
 - `log-generator`: writes a timestamp and a random UUID to `log.txt` every 5 seconds.
-- `log-reader`: serves the content of `log.txt` over HTTP GET `/` (port 8080).
+- `log-reader`: serves the last line of `log.txt` and the count from `pingpong.txt` on GET `/` (port 8080).
 
-Deploy from the log-output directory:
-`kubectl apply -f manifests/`
+PV and PVC are in [../volumes](../volumes). Create the node directory first, then deploy from the repo root:
 
-View logs:
-`kubectl logs -f deployment/log-output -c log-generator`
-
-Access through the Ingress (k3d port 8081 -> 80):
-`curl http://localhost:8081/`
+```sh
+docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
+kubectl apply -f volumes/
+kubectl apply -f log-output/manifests/ -f ping-pong/manifests/
+curl http://localhost:8081/
+```

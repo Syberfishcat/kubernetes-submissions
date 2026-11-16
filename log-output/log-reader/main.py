@@ -1,7 +1,26 @@
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-LOG_FILE = os.path.join(os.environ.get("LOG_DIR", "/app/logs"), "log.txt")
+LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
+LOG_FILE = os.path.join(LOG_DIR, "log.txt")
+COUNT_FILE = os.path.join(LOG_DIR, "pingpong.txt")
+
+
+def read_last_line(path):
+    try:
+        with open(path) as f:
+            lines = f.read().splitlines()
+        return lines[-1] if lines else ""
+    except FileNotFoundError:
+        return ""
+
+
+def read_count(path):
+    try:
+        with open(path) as f:
+            return f.read().strip() or "0"
+    except FileNotFoundError:
+        return "0"
 
 
 class LogHandler(BaseHTTPRequestHandler):
@@ -9,11 +28,7 @@ class LogHandler(BaseHTTPRequestHandler):
         if self.path != "/":
             self.send_error(404, "Not Found")
             return
-        try:
-            with open(LOG_FILE, "rb") as f:
-                body = f.read()
-        except FileNotFoundError:
-            body = b""
+        body = f"{read_last_line(LOG_FILE)}\nPing / Pongs: {read_count(COUNT_FILE)}\n".encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/plain; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
