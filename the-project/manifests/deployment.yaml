@@ -18,7 +18,7 @@ spec:
             claimName: project-claim
       containers:
         - name: todo-app
-          image: sybercat/todo-app:1.12
+          image: sybercat/todo-app:1.13
           volumeMounts: # Mount volume
           - name: images
             mountPath: /app/images

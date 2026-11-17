@@ -1,7 +1,6 @@
 ## Todo app
 
-Shows a random picture from Picsum at `/`. The image is cached in a PersistentVolume (`/app/images`) and refreshed every 10 minutes.
-Uses `PORT` (default: `8080`). `GET /shutdown` crashes the container for testing.
+Shows a random Picsum image (cached in a PersistentVolume), a todo input (max 140 chars), a Send button and a hardcoded todo list.
 
 Run commands from `the-project`.
 
@@ -12,4 +11,4 @@ kubectl apply -f ../volumes/project-pv.yaml -f ../volumes/project-pvc.yaml
 kubectl apply -f manifests/
 ```
 
-Open <http://localhost:8081/> (`localhost:8081` -> Ingress -> Service `2345` -> container `3000`).
+Open <http://localhost:8081/>.

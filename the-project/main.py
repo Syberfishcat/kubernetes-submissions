@@ -8,6 +8,7 @@ IMAGE_DIR = os.environ.get("IMAGE_DIR", "/app/images")
 IMAGE_PATH = os.path.join(IMAGE_DIR, "image.jpg")
 IMAGE_URL = "https://picsum.photos/1200"
 MAX_AGE = 10 * 60  # seconds
+TODOS = ["Learn Kubernetes basics", "Deploy application to cluster", "Configure persistent volumes"]
 
 lock = threading.Lock()
 
@@ -60,9 +61,23 @@ class TodoHandler(BaseHTTPRequestHandler):
                 "img{width:460px;max-width:100%;border-radius:8px;"
                 "box-shadow:0 2px 8px rgba(0,0,0,.3);}"
                 "p{color:#777;}"
+                "form{margin:30px 0 10px;}"
+                "input{width:320px;padding:8px;border:2px solid #4caf50;border-radius:4px;}"
+                "button{padding:9px 16px;margin-left:8px;border:0;border-radius:4px;"
+                "background:#4caf50;color:#fff;cursor:pointer;}"
+                "ul{list-style:none;padding:0;max-width:520px;margin:0 auto;text-align:left;}"
+                "li{padding:10px 12px;margin:8px 0;background:#f9f9f9;"
+                "border-left:4px solid #4caf50;border-radius:4px;}"
                 "</style></head><body>"
                 "<h1>Todo App</h1>"
                 '<img src="/image">'
+                "<form onsubmit='return false'>"
+                "<input type='text' maxlength='140' "
+                "placeholder='Enter a new todo (max 140 characters)'>"
+                "<button type='submit'>Send</button></form>"
+                "<h2>Todos</h2><ul>"
+                + "".join(f"<li>{t}</li>" for t in TODOS)
+                + "</ul>"
                 "<p>DevOps with Kubernetes 2026</p>"
                 "</body></html>"
             )
