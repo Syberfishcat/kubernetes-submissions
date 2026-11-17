@@ -12,9 +12,16 @@ spec:
       labels:
         app: todo-app
     spec:
+      volumes: # Define volume
+        - name: images
+          persistentVolumeClaim:
+            claimName: project-claim
       containers:
         - name: todo-app
-          image: sybercat/todo-app:1.8
+          image: sybercat/todo-app:1.12
+          volumeMounts: # Mount volume
+          - name: images
+            mountPath: /app/images
           env:
             - name: PORT
               value: "3000"
