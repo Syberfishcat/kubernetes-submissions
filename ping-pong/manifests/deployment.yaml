@@ -12,13 +12,6 @@ spec:
       labels:
         app: ping-pong
     spec:
-      volumes: # Define volume
-        - name: shared-logs
-          persistentVolumeClaim:
-            claimName: logs-claim
       containers:
         - name: ping-pong
-          image: sybercat/ping-pong:1.11
-          volumeMounts: # Mount volume
-          - name: shared-logs
-            mountPath: /app/logs
+          image: sybercat/ping-pong:2.1

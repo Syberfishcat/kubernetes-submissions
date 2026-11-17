@@ -1,9 +1,10 @@
 import os
+import urllib.request
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
 LOG_FILE = os.path.join(LOG_DIR, "log.txt")
-COUNT_FILE = os.path.join(LOG_DIR, "pingpong.txt")
+PINGS_URL = os.environ.get("PINGS_URL", "http://ping-pong-svc:2345/pings")
 
 
 def read_last_line(path):
@@ -15,11 +16,11 @@ def read_last_line(path):
         return ""
 
 
-def read_count(path):
+def read_count():
     try:
-        with open(path) as f:
-            return f.read().strip() or "0"
-    except FileNotFoundError:
+        with urllib.request.urlopen(PINGS_URL, timeout=3) as r:
+            return r.read().decode().strip()
+    except Exception:
         return "0"
 
 
@@ -28,7 +29,7 @@ class LogHandler(BaseHTTPRequestHandler):
         if self.path != "/":
             self.send_error(404, "Not Found")
             return
-        body = f"{read_last_line(LOG_FILE)}\nPing / Pongs: {read_count(COUNT_FILE)}\n".encode()
+        body = f"{read_last_line(LOG_FILE)}\nPing / Pongs: {read_count()}\n".encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/plain; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
