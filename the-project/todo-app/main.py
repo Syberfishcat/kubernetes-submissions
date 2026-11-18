@@ -2,13 +2,15 @@ import os
 import threading
 import time
 import urllib.request
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 IMAGE_DIR = os.environ.get("IMAGE_DIR", "/app/images")
 IMAGE_PATH = os.path.join(IMAGE_DIR, "image.jpg")
 IMAGE_URL = "https://picsum.photos/1200"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+INDEX_PATH = os.path.join(BASE_DIR, "index.html")
+SCRIPT_PATH = os.path.join(BASE_DIR, "script.js")
 MAX_AGE = 10 * 60  # seconds
-TODOS = ["Learn Kubernetes basics", "Deploy application to cluster", "Configure persistent volumes"]
 
 lock = threading.Lock()
 
@@ -52,36 +54,12 @@ class TodoHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/":
-            html = (
-                "<!DOCTYPE html><html><head><meta charset='utf-8'>"
-                "<title>Todo App</title>"
-                "<style>"
-                "body{font-family:Helvetica,Arial,sans-serif;text-align:center;margin:40px;}"
-                "h1{color:#333;}"
-                "img{width:460px;max-width:100%;border-radius:8px;"
-                "box-shadow:0 2px 8px rgba(0,0,0,.3);}"
-                "p{color:#777;}"
-                "form{margin:30px 0 10px;}"
-                "input{width:320px;padding:8px;border:2px solid #4caf50;border-radius:4px;}"
-                "button{padding:9px 16px;margin-left:8px;border:0;border-radius:4px;"
-                "background:#4caf50;color:#fff;cursor:pointer;}"
-                "ul{list-style:none;padding:0;max-width:520px;margin:0 auto;text-align:left;}"
-                "li{padding:10px 12px;margin:8px 0;background:#f9f9f9;"
-                "border-left:4px solid #4caf50;border-radius:4px;}"
-                "</style></head><body>"
-                "<h1>Todo App</h1>"
-                '<img src="/image">'
-                "<form onsubmit='return false'>"
-                "<input type='text' maxlength='140' "
-                "placeholder='Enter a new todo (max 140 characters)'>"
-                "<button type='submit'>Send</button></form>"
-                "<h2>Todos</h2><ul>"
-                + "".join(f"<li>{t}</li>" for t in TODOS)
-                + "</ul>"
-                "<p>DevOps with Kubernetes 2026</p>"
-                "</body></html>"
-            )
-            self.respond(200, "text/html; charset=utf-8", html.encode())
+            with open(INDEX_PATH, "rb") as f:
+                html = f.read()
+            self.respond(200, "text/html; charset=utf-8", html)
+        elif self.path == "/script.js":
+            with open(SCRIPT_PATH, "rb") as f:
+                self.respond(200, "application/javascript; charset=utf-8", f.read())
         elif self.path == "/image":
             try:
                 self.respond(200, "image/jpeg", get_image())
@@ -96,6 +74,6 @@ class TodoHandler(BaseHTTPRequestHandler):
 
 
 port = int(os.environ.get("PORT", "8080"))
-server = HTTPServer(("0.0.0.0", port), TodoHandler)
+server = ThreadingHTTPServer(("0.0.0.0", port), TodoHandler)
 print(f"Server started in port {port}", flush=True)
 server.serve_forever()
