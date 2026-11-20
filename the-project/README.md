@@ -1,6 +1,6 @@
 ## Todo app
 
-Two services behind one Ingress:
+Runs in the `project` namespace. Two services behind one Ingress:
 
 - `todo-app/` (frontend): serves `index.html`, `script.js` and a random Picsum image (cached in a PersistentVolume). The page has a todo input (max 140 characters), a Send button and the todo list.
 - `todo-backend/`: `GET /todos` returns the todos, `POST /todos` creates one. Todos are kept in memory.
@@ -17,6 +17,7 @@ docker push sybercat/todo-backend:2.2
 
 k3d cluster create -p 8081:80@loadbalancer --agents 2
 docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
+kubectl apply -f manifests/namespace.yaml
 kubectl apply -f ../volumes/project-pv.yaml -f ../volumes/project-pvc.yaml
 kubectl apply -f manifests/
 ```
