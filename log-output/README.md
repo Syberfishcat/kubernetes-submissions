@@ -3,7 +3,7 @@
 Runs in the `exercises` namespace (together with ping-pong). One Pod, two containers sharing the `logs-claim` PersistentVolumeClaim at `/app/logs` (not used by ping-pong):
 
 - `log-generator`: writes a timestamp and a random UUID to `log.txt` every 5 seconds.
-- `log-reader`: serves the last line of `log.txt` and the number of pongs (fetched over HTTP from ping-pong `GET /pings`) on GET `/` (port 8080).
+- `log-reader`: serves the last line of `log.txt` and the number of pongs (fetched over HTTP from ping-pong `GET /pings`) on GET `/` (port 8080). Also prints `information.txt` and `MESSAGE` from the [ConfigMap](manifests/configmap.yaml).
 
 PV and PVC are in [../volumes/logs-pv.yaml](../volumes/logs-pv.yaml) and [../volumes/logs-pvc.yaml](../volumes/logs-pvc.yaml). Create the node directory first, then deploy from the repo root:
 
