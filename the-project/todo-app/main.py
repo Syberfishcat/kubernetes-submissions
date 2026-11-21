@@ -4,16 +4,16 @@ import time
 import urllib.request
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
-IMAGE_DIR = os.environ.get("IMAGE_DIR", "/app/images")
-IMAGE_PATH = os.path.join(IMAGE_DIR, "image.jpg")
-IMAGE_URL = "https://picsum.photos/1200"
+IMAGE_DIR = os.environ["IMAGE_DIR"]
+IMAGE_URL = os.environ["IMAGE_URL"]
+MAX_AGE = int(os.environ["IMAGE_MAX_AGE"])  # seconds
+TODO_MAX_LENGTH = os.environ["TODO_MAX_LENGTH"]
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IMAGE_PATH = os.path.join(IMAGE_DIR, "image.jpg")
 INDEX_PATH = os.path.join(BASE_DIR, "index.html")
 SCRIPT_PATH = os.path.join(BASE_DIR, "script.js")
-MAX_AGE = 10 * 60  # seconds
 
 lock = threading.Lock()
-
 
 def fetch_image():
     os.makedirs(IMAGE_DIR, exist_ok=True)
@@ -54,9 +54,9 @@ class TodoHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/":
-            with open(INDEX_PATH, "rb") as f:
-                html = f.read()
-            self.respond(200, "text/html; charset=utf-8", html)
+            with open(INDEX_PATH, encoding="utf-8") as f:
+                html = f.read().replace("{{TODO_MAX_LENGTH}}", TODO_MAX_LENGTH)
+            self.respond(200, "text/html; charset=utf-8", html.encode())
         elif self.path == "/script.js":
             with open(SCRIPT_PATH, "rb") as f:
                 self.respond(200, "application/javascript; charset=utf-8", f.read())
@@ -73,7 +73,7 @@ class TodoHandler(BaseHTTPRequestHandler):
             self.send_error(404, "Not Found")
 
 
-port = int(os.environ.get("PORT", "8080"))
+port = int(os.environ["PORT"])
 server = ThreadingHTTPServer(("0.0.0.0", port), TodoHandler)
 print(f"Server started in port {port}", flush=True)
 server.serve_forever()

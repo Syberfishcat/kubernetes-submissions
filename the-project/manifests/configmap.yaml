@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-config
+  namespace: project
+data:
+  IMAGE_DIR: "/app/images"
+  IMAGE_URL: "https://picsum.photos/1200"
+  IMAGE_MAX_AGE: "600"
+  TODO_MAX_LENGTH: "140"

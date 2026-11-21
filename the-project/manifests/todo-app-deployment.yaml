@@ -19,10 +19,13 @@ spec:
             claimName: project-claim
       containers:
         - name: todo-app
-          image: sybercat/todo-app:2.2
+          image: sybercat/todo-app:2.6
           volumeMounts: # Mount volume
           - name: images
             mountPath: /app/images
           env:
             - name: PORT
               value: "3000"
+          envFrom:
+            - configMapRef:
+                name: project-config

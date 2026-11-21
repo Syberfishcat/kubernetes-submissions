@@ -15,7 +15,11 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: sybercat/todo-backend:2.2
+          image: sybercat/todo-backend:2.6
           env:
             - name: PORT
               value: "3000"
+          envFrom:
+            - configMapRef:
+                name: project-config
+

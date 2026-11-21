@@ -3,7 +3,7 @@ import os
 import threading
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
-MAX_LEN = 140
+MAX_LEN = int(os.environ["TODO_MAX_LENGTH"])
 todos = ["Learn Kubernetes basics", "Deploy application to cluster", "Configure persistent volumes"]
 lock = threading.Lock()
 
@@ -43,6 +43,6 @@ class TodoHandler(BaseHTTPRequestHandler):
         self.respond(201, {"todo": text})
 
 
-port = int(os.environ.get("PORT", "3000"))
+port = int(os.environ["PORT"])
 print(f"Server started in port {port}", flush=True)
 ThreadingHTTPServer(("0.0.0.0", port), TodoHandler).serve_forever()
