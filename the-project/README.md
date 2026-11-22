@@ -1,15 +1,12 @@
 ## Todo app
 
-Runs in the `project` namespace. Two services behind one Ingress:
+Runs in the `project` namespace:
 
-- `todo-app/` (frontend): serves `index.html`, `script.js` and a random Picsum image (cached in a PersistentVolume). The page has a todo input (max length from config), a Send button and the todo list.
-- `todo-backend/`: `GET /todos` returns the todos, `POST /todos` creates one. Todos are kept in memory.
+- `todo-app`: frontend with the todo list and a random image.
+- `todo-backend`: `GET /todos` and `POST /todos`. Todos are stored in Postgres.
+- `postgres-ss`: Postgres StatefulSet with one replica. The backend reads `DATABASE_URL` from [postgres-secret.yaml](manifests/postgres-secret.yaml), other settings from [configmap.yaml](manifests/configmap.yaml).
 
-The Ingress routes `/todos` to `todo-backend-svc` and everything else to `todo-app-svc`, so the browser talks to the backend directly.
-
-All configuration (port, image URL, cache time, max todo length) comes from env variables set in the deployments and [manifests/configmap.yaml](manifests/configmap.yaml).
-
-Run commands from `the-project`.
+Run from `the-project`:
 
 ```sh
 k3d cluster create -p 8081:80@loadbalancer --agents 2
