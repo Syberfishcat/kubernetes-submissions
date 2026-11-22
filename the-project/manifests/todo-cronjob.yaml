@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: random-wiki-todo
+  namespace: project
+spec:
+  schedule: "0 * * * *" # every hour
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: random-wiki-todo
+              image: curlimages/curl:8.11.1
+              command:
+                - sh
+                - -c
+                - |
+                  # Special:Random redirects to a random article, take the Location header
+                  URL=$(curl -s -o /dev/null -A "todo-cronjob/1.0" -w '%{redirect_url}' https://en.wikipedia.org/wiki/Special:Random)
+                  echo "Random article: $URL"
+                  curl -s -f -X POST -H 'Content-Type: application/json' \
+                    -d "{\"todo\": \"Read $URL\"}" \
+                    http://todo-backend-svc:2345/todos

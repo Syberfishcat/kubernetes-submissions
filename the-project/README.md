@@ -5,6 +5,7 @@ Runs in the `project` namespace:
 - `todo-app`: frontend with the todo list and a random image.
 - `todo-backend`: `GET /todos` and `POST /todos`. Todos are stored in Postgres.
 - `postgres-ss`: Postgres StatefulSet with one replica. The backend reads `DATABASE_URL` from [postgres-secret.yaml](manifests/postgres-secret.yaml), other settings from [configmap.yaml](manifests/configmap.yaml).
+- `random-wiki-todo`: [CronJob](manifests/todo-cronjob.yaml) that adds a `Read <random Wikipedia URL>` todo every hour.
 
 Run from `the-project`:
 
@@ -17,3 +18,9 @@ kubectl apply -f manifests/
 ```
 
 Open <http://localhost:8081/>.
+
+To run the CronJob right away:
+
+```sh
+kubectl -n project create job --from=cronjob/random-wiki-todo wiki-now
+```
