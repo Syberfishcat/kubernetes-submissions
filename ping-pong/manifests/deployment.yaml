@@ -15,4 +15,7 @@ spec:
     spec:
       containers:
         - name: ping-pong
-          image: sybercat/ping-pong:2.1
+          image: sybercat/ping-pong:2.7
+          envFrom:
+            - secretRef:
+                name: postgres-secret

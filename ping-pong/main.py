@@ -1,7 +1,27 @@
 import os
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-counter = 0
+import psycopg
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+
+
+def db():
+    return psycopg.connect(DATABASE_URL, autocommit=True)
+
+
+# Wait until the database accepts connections
+while True:
+    try:
+        with db() as conn:
+            conn.execute("CREATE TABLE IF NOT EXISTS counter (value INT NOT NULL)")
+            if conn.execute("SELECT COUNT(*) FROM counter").fetchone()[0] == 0:
+                conn.execute("INSERT INTO counter VALUES (0)")
+        break
+    except psycopg.OperationalError:
+        print("Database not ready, retrying...", flush=True)
+        time.sleep(2)
 
 
 class PingHandler(BaseHTTPRequestHandler):
@@ -14,13 +34,15 @@ class PingHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        global counter
         if self.path == "/pingpong":
-            body = f"pong {counter}"
-            counter += 1
-            self.respond(body)
+            with db() as conn:
+                count = conn.execute("SELECT value FROM counter").fetchone()[0]
+                conn.execute("UPDATE counter SET value = value + 1")
+            self.respond(f"pong {count}")
         elif self.path == "/pings":
-            self.respond(str(counter))
+            with db() as conn:
+                count = conn.execute("SELECT value FROM counter").fetchone()[0]
+            self.respond(str(count))
         else:
             self.send_error(404, "Not Found")
 
