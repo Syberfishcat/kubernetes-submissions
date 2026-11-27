@@ -54,13 +54,16 @@ class TodoHandler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(length) or b"{}")
             text = str(data["todo"]).strip()
         except (ValueError, KeyError, TypeError):
+            print(f"Rejected todo: invalid body", flush=True)
             self.respond(400, {"error": "Body must be JSON like {\"todo\": \"...\"}"})
             return
         if not text or len(text) > MAX_LEN:
+            print(f"Rejected todo: ({len(text)} chars): {text}", flush=True)
             self.respond(400, {"error": f"Todo must be 1-{MAX_LEN} characters"})
             return
         with db() as conn:
             conn.execute("INSERT INTO todos (text) VALUES (%s)", (text,))
+            print(f"Created todo: {text}", flush=True)
         self.respond(201, {"todo": text})
 
 
